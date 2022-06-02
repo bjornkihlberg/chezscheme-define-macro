@@ -1,0 +1,11 @@
+(library (define-macro)
+  (export define-macro)
+  (import (chezscheme))
+  (define-syntax (define-macro code)
+    (syntax-case code ()
+      [(_ (name . args) . body) #'(define-macro name (lambda args . body))]
+      [(_ name transformer)
+       #'(define-syntax (name y)
+           (syntax-case y ()
+             [(_ . args)
+              (datum->syntax #'_ (apply transformer (syntax->datum #'args)))]))])))
